@@ -1,0 +1,62 @@
+name: mobileapp
+description: "A new Flutter project."
+
+publish_to: 'none'
+
+version: 1.0.1+1
+
+environment:
+  sdk: ^3.9.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  http: ^1.5.0
+  get: ^4.7.2
+  flutter_screenutil: ^5.9.3
+  shared_preferences: ^2.5.3
+  awesome_snackbar_content: ^0.1.8
+  connectivity_plus: ^7.0.0
+  flutter_svg: ^2.0.7
+  google_fonts: ^6.1.0
+  carousel_slider: ^5.1.1
+  cached_network_image: ^3.4.1
+  focus_detector: ^2.0.1
+  staggered_grid_view: ^0.0.1
+  url_launcher: ^6.3.2
+  flutter_widget_from_html_core: ^0.17.0
+  flutter_html: ^3.0.0
+  shimmer: ^3.0.0
+  animated_notch_bottom_bar: ^1.0.3
+  file_picker: ^10.3.3
+  qr_code_scanner_plus: ^2.0.13
+  qr_flutter: ^4.1.0
+  permission_handler: ^11.0.1
+  device_info_plus: ^12.2.0
+  image_picker: ^1.0.4
+  image_cropper: ^11.0.0
+  flutter_image_compress: ^2.1.0
+  qr: ^3.0.2
+  animate_do: ^4.2.0
+  flutter_launcher_icons: ^0.14.4
+  mobile_scanner: ^7.1.4
+  path_provider: ^2.1.5
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/main_logo.png"
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/images/payment_qr.png
