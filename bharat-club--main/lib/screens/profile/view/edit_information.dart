@@ -542,6 +542,7 @@ class EditProfileInformationScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(isWeb ? 12 : 12.r),
           ),
           child: TextInputWidget(
+            isWeb: isWeb,
             placeHolder: label,
             controller: controller,
             errorText: null,

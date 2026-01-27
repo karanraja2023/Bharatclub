@@ -79,7 +79,8 @@ class AppPages {
     ),
     GetPage(
       name: AppRoutes.editPersonOfContactScreen,
-      page: () => EditPersonOfContactScreen(),
+      // page: () => EditPersonOfContactScreen(),
+      page: () => EditFamilyInformationScreen(),
       transition: Transition.rightToLeftWithFade,
     ),
     GetPage(
