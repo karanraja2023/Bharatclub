@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mobileapp/app_theme/theme/app_theme.dart';
@@ -337,6 +338,137 @@ class AppAlert {
                               style: getTextMedium(
                                 colors: Colors.white,
                                 size: 14.sp,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+    return (action != null) ? action : AlertAction.cancel;
+  }
+
+
+  static Future<AlertAction> showCustomDialogYesNoLogoutWeb(
+      BuildContext context,
+      String message, {
+        String? title,
+        String? negativeActionText,
+        String? positiveActionText,
+      }) async {
+    final bool isWeb = kIsWeb; // 🔹 Platform detection
+
+    final action = await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(isWeb ? 8 : 8.r),
+          ),
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          child: Container(
+            // 🔹 On web, we constrain the width so it doesn't look like a giant bar
+            constraints: BoxConstraints(maxWidth: isWeb ? 400 : double.infinity),
+            decoration: BoxDecoration(
+              shape: BoxShape.rectangle,
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(isWeb ? 8 : 8.r),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Title Section
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: isWeb ? 20 : 20.w,
+                    right: isWeb ? 14 : 14.w,
+                    top: isWeb ? 20 : 20.w,
+                    bottom: isWeb ? 12 : 12.h,
+                  ),
+                  child: Text(
+                    title ?? "Log Out?",
+                    style: getTextSemiBold(
+                      colors: Colors.black87,
+                      size: isWeb ? 16 : 16.sp,
+                    ),
+                  ),
+                ),
+                // Message Section
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: isWeb ? 20 : 20.w,
+                    right: isWeb ? 14 : 14.w,
+                    bottom: isWeb ? 12 : 12.h,
+                  ),
+                  child: Text(
+                    message,
+                    style: getTextRegular(
+                      colors: Colors.black87,
+                      size: isWeb ? 14 : 14.sp,
+                    ),
+                  ),
+                ),
+                // Action Buttons Section
+                Padding(
+                  padding: EdgeInsets.all(isWeb ? 20 : 20.w),
+                  child: Row(
+                    children: [
+                      // Negative Button (Cancel)
+                      Expanded(
+                        child: SizedBox(
+                          height: isWeb ? 45 : 45.h,
+                          child: ElevatedButton(
+                            onPressed: () => Get.back(result: AlertAction.no),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.grey.shade50,
+                              elevation: 0,
+                              side: BorderSide(
+                                width: 1.5,
+                                color: AppColors.cAppColorsBlue,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(isWeb ? 6 : 6.r),
+                              ),
+                            ),
+                            child: Text(
+                              negativeActionText ?? 'Cancel',
+                              style: getTextMedium(
+                                colors: AppColors.cAppColorsRed,
+                                size: isWeb ? 14 : 14.sp,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: isWeb ? 14 : 14.w),
+                      // Positive Button (Logout)
+                      Expanded(
+                        child: SizedBox(
+                          height: isWeb ? 45 : 45.h,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.cAppColorsBlue,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(isWeb ? 6 : 6.r),
+                              ),
+                            ),
+                            onPressed: () => Get.back(result: AlertAction.yes),
+                            child: Text(
+                              positiveActionText ?? "Log Out",
+                              style: getTextMedium(
+                                colors: Colors.white,
+                                size: isWeb ? 14 : 14.sp,
                               ),
                             ),
                           ),

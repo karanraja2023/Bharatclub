@@ -393,7 +393,6 @@ import 'package:flutter/foundation.dart';
 
 // Helper class for content items
 
-
 class EventScreen extends StatefulWidget {
   const EventScreen({super.key});
 
@@ -454,9 +453,7 @@ class _EventScreenState extends State<EventScreen> {
                 decoration: const BoxDecoration(
                   boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10)],
                 ),
-                child: ClipRect(
-                  child: eventMainView(true),
-                ),
+                child: ClipRect(child: eventMainView(true)),
               ),
             ),
           );
@@ -470,10 +467,7 @@ class _EventScreenState extends State<EventScreen> {
   Widget eventMainView(bool isWeb) {
     return Scaffold(
       backgroundColor: isWeb ? Colors.white : AppColors.background,
-      appBar: CustomAppBar(
-        title: 'Events',
-        isWeb: isWeb,
-      ),
+      appBar: CustomAppBar(title: 'Events', isWeb: isWeb),
       body: FocusDetector(
         onVisibilityGained: () async {
           if (_isInitialized && mounted && controller.hasLoadedOnce.value) {
@@ -511,7 +505,10 @@ class _EventScreenState extends State<EventScreen> {
       child: Column(
         children: [
           // Banner
-          BannerCard(bannerUrl: controller.sEventBannerImage.value),
+          BannerCard(
+            bannerUrl: controller.sEventBannerImage.value,
+            isWeb: isWeb,
+          ),
 
           SizedBox(height: isWeb ? 15 : 5.h),
 
@@ -523,15 +520,15 @@ class _EventScreenState extends State<EventScreen> {
           // Event List
           controller.intEventCount.value > 0
               ? ListView.builder(
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: controller.mEventList.length,
-            padding: EdgeInsets.zero,
-            shrinkWrap: true,
-            itemBuilder: (context, index) {
-              EventModule mEventModule = controller.mEventList[index];
-              return _buildEventItem(mEventModule, isWeb);
-            },
-          )
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: controller.mEventList.length,
+                  padding: EdgeInsets.zero,
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    EventModule mEventModule = controller.mEventList[index];
+                    return _buildEventItem(mEventModule, isWeb);
+                  },
+                )
               : _buildNoData(isWeb),
         ],
       ),
@@ -616,22 +613,35 @@ class _EventScreenState extends State<EventScreen> {
       children: contentItems.map((item) {
         if (item.isBullet) {
           return Padding(
-            padding: EdgeInsets.only(left: isWeb ? 10 : 10.w, bottom: isWeb ? 8 : 8.h),
+            padding: EdgeInsets.only(
+              left: isWeb ? 10 : 10.w,
+              bottom: isWeb ? 8 : 8.h,
+            ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: EdgeInsets.only(top: isWeb ? 6 : 6.h, right: isWeb ? 8 : 8.w),
+                  padding: EdgeInsets.only(
+                    top: isWeb ? 6 : 6.h,
+                    right: isWeb ? 8 : 8.w,
+                  ),
                   child: Container(
                     width: isWeb ? 5 : 5.w,
                     height: isWeb ? 5 : 5.w,
-                    decoration: const BoxDecoration(color: Colors.black87, shape: BoxShape.circle),
+                    decoration: const BoxDecoration(
+                      color: Colors.black87,
+                      shape: BoxShape.circle,
+                    ),
                   ),
                 ),
                 Expanded(
                   child: Text(
                     item.text,
-                    style: getTextRegular(colors: Colors.black87, size: isWeb ? 15 : 15.sp, heights: 1.5),
+                    style: getTextRegular(
+                      colors: Colors.black87,
+                      size: isWeb ? 15 : 15.sp,
+                      heights: 1.5,
+                    ),
                   ),
                 ),
               ],
@@ -643,8 +653,16 @@ class _EventScreenState extends State<EventScreen> {
             child: Text(
               item.text,
               style: item.isHeading
-                  ? getTextSemiBold(colors: Colors.black, size: isWeb ? 17 : 17.sp, heights: 1.4)
-                  : getTextSemiBold(colors: Colors.black87, size: isWeb ? 16 : 16.sp, heights: 1.5),
+                  ? getTextSemiBold(
+                      colors: Colors.black,
+                      size: isWeb ? 17 : 17.sp,
+                      heights: 1.4,
+                    )
+                  : getTextSemiBold(
+                      colors: Colors.black87,
+                      size: isWeb ? 16 : 16.sp,
+                      heights: 1.5,
+                    ),
               textAlign: TextAlign.left,
             ),
           );
@@ -659,7 +677,10 @@ class _EventScreenState extends State<EventScreen> {
       child: Center(
         child: Text(
           "No data found",
-          style: getTextSemiBold(colors: AppColors.cAppColorsBlue, size: isWeb ? 18 : 18.sp),
+          style: getTextSemiBold(
+            colors: AppColors.cAppColorsBlue,
+            size: isWeb ? 18 : 18.sp,
+          ),
         ),
       ),
     );
@@ -687,7 +708,10 @@ class _EventScreenState extends State<EventScreen> {
         await controller.getEventUsApi();
       } else {
         if (mounted && Get.context != null) {
-          AppAlert.showSnackBar(Get.context!, MessageConstants.noInternetConnection);
+          AppAlert.showSnackBar(
+            Get.context!,
+            MessageConstants.noInternetConnection,
+          );
         }
       }
     } catch (e) {
@@ -697,7 +721,10 @@ class _EventScreenState extends State<EventScreen> {
 
   List<ContentItem> _parseHtmlContent(String htmlContent) {
     List<ContentItem> items = [];
-    htmlContent = htmlContent.replaceAll(RegExp(r'<(script|style)[^>]*>.*?</\1>', dotAll: true), '');
+    htmlContent = htmlContent.replaceAll(
+      RegExp(r'<(script|style)[^>]*>.*?</\1>', dotAll: true),
+      '',
+    );
     List<String> blocks = htmlContent.split(RegExp(r'</(?:p|div|li|h[1-6])>'));
 
     for (String block in blocks) {
@@ -706,7 +733,13 @@ class _EventScreenState extends State<EventScreen> {
       bool isHeading = block.contains(RegExp(r'<h[1-6][^>]*>'));
       String text = _stripHtmlTags(block);
       if (text.trim().isNotEmpty) {
-        items.add(ContentItem(text: text.trim(), isBullet: isBullet, isHeading: isHeading));
+        items.add(
+          ContentItem(
+            text: text.trim(),
+            isBullet: isBullet,
+            isHeading: isHeading,
+          ),
+        );
       }
     }
     return items;
@@ -715,10 +748,14 @@ class _EventScreenState extends State<EventScreen> {
   String _stripHtmlTags(String htmlString) {
     String result = htmlString.replaceAll(RegExp(r"<[^>]*>"), '');
     result = result
-        .replaceAll('&nbsp;', ' ').replaceAll('&amp;', '&')
-        .replaceAll('&quot;', '"').replaceAll('&#39;', "'")
-        .replaceAll('&rdquo;', '"').replaceAll('&ldquo;', '"')
-        .replaceAll('&rsquo;', "'").replaceAll('&bull;', '•');
+        .replaceAll('&nbsp;', ' ')
+        .replaceAll('&amp;', '&')
+        .replaceAll('&quot;', '"')
+        .replaceAll('&#39;', "'")
+        .replaceAll('&rdquo;', '"')
+        .replaceAll('&ldquo;', '"')
+        .replaceAll('&rsquo;', "'")
+        .replaceAll('&bull;', '•');
     return result.replaceAll(RegExp(r'\s+'), ' ').trim();
   }
 }

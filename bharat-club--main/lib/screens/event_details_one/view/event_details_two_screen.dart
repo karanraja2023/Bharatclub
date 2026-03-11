@@ -866,22 +866,14 @@ class EventDetailsTwoScreen extends GetView<EventDetailsOneController> {
 
         return Scaffold(
           backgroundColor: isWeb ? Colors.grey[200] : Colors.grey[50],
-          appBar: CustomAppBar(title: 'Event Payment Page', isWeb: isWeb),
           body: FocusDetector(
             child: isWeb
                 ? Center(
                     child: Container(
                       width: 500, // Optimal checkout width for Web
-                      margin: const EdgeInsets.symmetric(vertical: 24),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
+                      decoration: const BoxDecoration(
                         boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 30,
-                            offset: const Offset(0, 10),
-                          ),
+                          BoxShadow(color: Colors.black12, blurRadius: 10),
                         ],
                       ),
                       child: _fullView(context, isWeb),
@@ -895,9 +887,13 @@ class EventDetailsTwoScreen extends GetView<EventDetailsOneController> {
   }
 
   Widget _fullView(BuildContext context, bool isWeb) {
-    return Container(
-      padding: EdgeInsets.all(isWeb ? 24 : 16.w),
-      child: eventDetailsView(context, isWeb),
+    return Scaffold(
+      backgroundColor: isWeb ? Colors.grey[200] : Colors.grey[50],
+      appBar: CustomAppBar(title: 'Event Payment Page', isWeb: isWeb),
+      body: Container(
+        padding: EdgeInsets.all(isWeb ? 24 : 16.w),
+        child: eventDetailsView(context, isWeb),
+      ),
     );
   }
 

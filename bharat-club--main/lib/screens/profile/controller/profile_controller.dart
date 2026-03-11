@@ -592,8 +592,18 @@ class ProfileController extends GetxController {
     return false;
   }
 
-  void deleteProfile() {
-    AppAlert.showCustomDialogYesNoLogout(
+  void deleteProfile(bool isWeb) {
+    isWeb?
+    AppAlert.showCustomDialogYesNoLogoutWeb(
+      Get.context!,
+      MessageConstants.wDeleteMessage,
+      title: 'Delete Profile',
+      positiveActionText: 'Delete',
+    ).then((value) async {
+      if (value == AlertAction.yes) {
+        deleteApiCall();
+      }
+    }): AppAlert.showCustomDialogYesNoLogout(
       Get.context!,
       MessageConstants.wDeleteMessage,
       title: 'Delete Profile',

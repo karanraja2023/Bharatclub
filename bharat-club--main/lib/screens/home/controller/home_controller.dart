@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -347,139 +348,265 @@ class HomeController extends GetxController {
     // );
   }
 
-  void logout() async{
+  // void logout() async{
+  //   final shouldLogout = await Get.dialog<bool>(
+  //     Dialog(
+  //       backgroundColor: Colors.transparent,
+  //       child: Container(
+  //         decoration: BoxDecoration(
+  //           color: AppColors.white,
+  //           borderRadius: BorderRadius.circular(20.r),
+  //           boxShadow: [
+  //             BoxShadow(
+  //               color: Colors.black.withValues(
+  //                 alpha: 0.15,
+  //               ),
+  //               blurRadius: 30,
+  //               offset: const Offset(0, 10),
+  //             ),
+  //           ],
+  //         ),
+  //         padding: EdgeInsets.all(24.w),
+  //         child: Column(
+  //           mainAxisSize: MainAxisSize.min,
+  //           children: [
+  //             Container(
+  //               padding: EdgeInsets.all(16.w),
+  //               decoration: BoxDecoration(
+  //                 color: AppColors.primaryGreen
+  //                     .withValues(alpha: 0.1),
+  //                 shape: BoxShape.circle,
+  //               ),
+  //               child: Icon(
+  //                 Icons.logout_rounded,
+  //                 color: AppColors.primaryGreen,
+  //                 size: 32.sp,
+  //               ),
+  //             ),
+  //             SizedBox(height: 20.h),
+  //             Text(
+  //               'Confirm Logout',
+  //               style: getTextBold(
+  //                 colors: AppColors.black,
+  //                 size: 20.sp,
+  //               ),
+  //             ),
+  //             SizedBox(height: 12.h),
+  //             Text(
+  //               'Are you sure you want to logout?\nYou will need to login again to access your account.',
+  //               textAlign: TextAlign.center,
+  //               style: getTextRegular(
+  //                 colors: Colors.grey.shade600,
+  //                 size: 14.sp,
+  //               ),
+  //             ),
+  //             SizedBox(height: 24.h),
+  //             Row(
+  //               children: [
+  //                 Expanded(
+  //                   child: Container(
+  //                     height: 48.h,
+  //                     decoration: BoxDecoration(
+  //                       border: Border.all(
+  //                         color: Colors.grey.shade300,
+  //                         width: 1.5,
+  //                       ),
+  //                       borderRadius:
+  //                       BorderRadius.circular(12.r),
+  //                     ),
+  //                     child: Material(
+  //                       color: Colors.transparent,
+  //                       child: InkWell(
+  //                         onTap: () =>
+  //                             Get.back(result: false),
+  //                         borderRadius:
+  //                         BorderRadius.circular(
+  //                           12.r,
+  //                         ),
+  //                         child: Center(
+  //                           child: Text(
+  //                             'Cancel',
+  //                             style: getTextSemiBold(
+  //                               colors: Colors
+  //                                   .grey
+  //                                   .shade700,
+  //                               size: 15.sp,
+  //                             ),
+  //                           ),
+  //                         ),
+  //                       ),
+  //                     ),
+  //                   ),
+  //                 ),
+  //                 SizedBox(width: 12.w),
+  //                 Expanded(
+  //                   child: Container(
+  //                     height: 48.h,
+  //                     decoration: BoxDecoration(
+  //                       gradient: LinearGradient(
+  //                         colors: [
+  //                           AppColors.primaryGreen,
+  //                           AppColors.secondaryGreen,
+  //                         ],
+  //                       ),
+  //                       borderRadius:
+  //                       BorderRadius.circular(12.r),
+  //                       boxShadow: [
+  //                         BoxShadow(
+  //                           color: AppColors
+  //                               .primaryGreen
+  //                               .withValues(alpha: 0.3),
+  //                           blurRadius: 8,
+  //                           offset: const Offset(0, 4),
+  //                         ),
+  //                       ],
+  //                     ),
+  //                     child: Material(
+  //                       color: Colors.transparent,
+  //                       child: InkWell(
+  //                         onTap: () =>
+  //                             Get.back(result: true),
+  //                         borderRadius:
+  //                         BorderRadius.circular(
+  //                           12.r,
+  //                         ),
+  //                         child: Center(
+  //                           child: Text(
+  //                             'Logout',
+  //                             style: getTextSemiBold(
+  //                               colors: AppColors.white,
+  //                               size: 15.sp,
+  //                             ),
+  //                           ),
+  //                         ),
+  //                       ),
+  //                     ),
+  //                   ),
+  //                 ),
+  //               ],
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //     ),
+  //     barrierDismissible: false,
+  //   );
+  //
+  //   if (shouldLogout == true) {
+  //     Get.dialog(
+  //       Center(
+  //         child: Container(
+  //           padding: EdgeInsets.all(20.w),
+  //           decoration: BoxDecoration(
+  //             color: AppColors.white,
+  //             borderRadius: BorderRadius.circular(12.r),
+  //           ),
+  //           child: Column(
+  //             mainAxisSize: MainAxisSize.min,
+  //             children: [
+  //               CircularProgressIndicator(
+  //                 color: AppColors.primaryGreen,
+  //               ),
+  //               SizedBox(height: 16.h),
+  //               Text(
+  //                 'Logging out...',
+  //                 style: getTextSemiBold(
+  //                   colors: AppColors.black,
+  //                   size: 14.sp,
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       ),
+  //       barrierDismissible: false,
+  //     );
+  //
+  //     await SharedPrefs().sharedPreferencesInstance();
+  //     await SharedPrefs().logout();
+  //     AppAlert.showSnackBar(Get.context!, "Account logged out successfully");
+  //
+  //     // Get.snackbar(
+  //     //   'Logged Out',
+  //     //   "Account logged out successfully",
+  //     //   snackPosition: SnackPosition.BOTTOM,
+  //     // );
+  //
+  //     Get.offAllNamed(AppRoutes.loginScreen);
+  //   }
+  // }
+
+  void logout() async {
+    final bool isWeb = kIsWeb; // 🔹 Define the platform check
+
     final shouldLogout = await Get.dialog<bool>(
       Dialog(
         backgroundColor: Colors.transparent,
         child: Container(
+          // Constrain width on Web so it doesn't span the whole screen
+          constraints: BoxConstraints(maxWidth: isWeb ? 400 : double.infinity),
           decoration: BoxDecoration(
             color: AppColors.white,
-            borderRadius: BorderRadius.circular(20.r),
+            borderRadius: BorderRadius.circular(isWeb ? 20 : 20.r),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(
-                  alpha: 0.15,
-                ),
-                blurRadius: 30,
-                offset: const Offset(0, 10),
+                color: Colors.black.withValues(alpha: 0.15),
+                blurRadius: isWeb ? 30 : 30.r,
+                offset: Offset(0, isWeb ? 10 : 10.h),
               ),
             ],
           ),
-          padding: EdgeInsets.all(24.w),
+          padding: EdgeInsets.all(isWeb ? 24 : 24.w),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                padding: EdgeInsets.all(16.w),
+                padding: EdgeInsets.all(isWeb ? 16 : 16.w),
                 decoration: BoxDecoration(
-                  color: AppColors.primaryGreen
-                      .withValues(alpha: 0.1),
+                  color: AppColors.primaryGreen.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   Icons.logout_rounded,
                   color: AppColors.primaryGreen,
-                  size: 32.sp,
+                  size: isWeb ? 32 : 32.sp,
                 ),
               ),
-              SizedBox(height: 20.h),
+              SizedBox(height: isWeb ? 20 : 20.h),
               Text(
                 'Confirm Logout',
                 style: getTextBold(
                   colors: AppColors.black,
-                  size: 20.sp,
+                  size: isWeb ? 20 : 20.sp,
                 ),
               ),
-              SizedBox(height: 12.h),
+              SizedBox(height: isWeb ? 12 : 12.h),
               Text(
                 'Are you sure you want to logout?\nYou will need to login again to access your account.',
                 textAlign: TextAlign.center,
                 style: getTextRegular(
                   colors: Colors.grey.shade600,
-                  size: 14.sp,
+                  size: isWeb ? 14 : 14.sp,
                 ),
               ),
-              SizedBox(height: 24.h),
+              SizedBox(height: isWeb ? 24 : 24.h),
               Row(
                 children: [
                   Expanded(
-                    child: Container(
-                      height: 48.h,
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Colors.grey.shade300,
-                          width: 1.5,
-                        ),
-                        borderRadius:
-                        BorderRadius.circular(12.r),
-                      ),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: () =>
-                              Get.back(result: false),
-                          borderRadius:
-                          BorderRadius.circular(
-                            12.r,
-                          ),
-                          child: Center(
-                            child: Text(
-                              'Cancel',
-                              style: getTextSemiBold(
-                                colors: Colors
-                                    .grey
-                                    .shade700,
-                                size: 15.sp,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+                    child: _buildDialogButton(
+                      label: 'Cancel',
+                      onTap: () => Get.back(result: false),
+                      isWeb: isWeb,
+                      isPrimary: false,
                     ),
                   ),
-                  SizedBox(width: 12.w),
+                  SizedBox(width: isWeb ? 12 : 12.w),
                   Expanded(
-                    child: Container(
-                      height: 48.h,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            AppColors.primaryGreen,
-                            AppColors.secondaryGreen,
-                          ],
-                        ),
-                        borderRadius:
-                        BorderRadius.circular(12.r),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors
-                                .primaryGreen
-                                .withValues(alpha: 0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: () =>
-                              Get.back(result: true),
-                          borderRadius:
-                          BorderRadius.circular(
-                            12.r,
-                          ),
-                          child: Center(
-                            child: Text(
-                              'Logout',
-                              style: getTextSemiBold(
-                                colors: AppColors.white,
-                                size: 15.sp,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+                    child: _buildDialogButton(
+                      label: 'Logout',
+                      onTap: () => Get.back(result: true),
+                      isWeb: isWeb,
+                      isPrimary: true,
                     ),
                   ),
                 ],
@@ -492,26 +619,25 @@ class HomeController extends GetxController {
     );
 
     if (shouldLogout == true) {
+      // Show Loading Dialog
       Get.dialog(
         Center(
           child: Container(
-            padding: EdgeInsets.all(20.w),
+            padding: EdgeInsets.all(isWeb ? 20 : 20.w),
             decoration: BoxDecoration(
               color: AppColors.white,
-              borderRadius: BorderRadius.circular(12.r),
+              borderRadius: BorderRadius.circular(isWeb ? 12 : 12.r),
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                CircularProgressIndicator(
-                  color: AppColors.primaryGreen,
-                ),
-                SizedBox(height: 16.h),
+                CircularProgressIndicator(color: AppColors.primaryGreen),
+                SizedBox(height: isWeb ? 16 : 16.h),
                 Text(
                   'Logging out...',
                   style: getTextSemiBold(
                     colors: AppColors.black,
-                    size: 14.sp,
+                    size: isWeb ? 14 : 14.sp,
                   ),
                 ),
               ],
@@ -525,13 +651,41 @@ class HomeController extends GetxController {
       await SharedPrefs().logout();
       AppAlert.showSnackBar(Get.context!, "Account logged out successfully");
 
-      // Get.snackbar(
-      //   'Logged Out',
-      //   "Account logged out successfully",
-      //   snackPosition: SnackPosition.BOTTOM,
-      // );
-
       Get.offAllNamed(AppRoutes.loginScreen);
     }
   }
+
+  // 🔹 Helper to keep the Row clean and maintainable
+  Widget _buildDialogButton({
+    required String label,
+    required VoidCallback onTap,
+    required bool isWeb,
+    required bool isPrimary
+  }) {
+    return Container(
+      height: isWeb ? 48 : 48.h,
+      decoration: BoxDecoration(
+        border: isPrimary ? null : Border.all(color: Colors.grey.shade300, width: 1.5),
+        gradient: isPrimary ? LinearGradient(colors: [AppColors.primaryGreen, AppColors.secondaryGreen]) : null,
+        borderRadius: BorderRadius.circular(isWeb ? 12 : 12.r),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(isWeb ? 12 : 12.r),
+          child: Center(
+            child: Text(
+              label,
+              style: getTextSemiBold(
+                colors: isPrimary ? AppColors.white : Colors.grey.shade700,
+                size: isWeb ? 15 : 15.sp,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
 }

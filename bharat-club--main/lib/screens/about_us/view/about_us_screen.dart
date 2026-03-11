@@ -202,6 +202,7 @@ class AboutUsScreen extends GetView<AboutUsController> {
                   bannerUrl: controller.aboutBannerImage.value,
                   // Adjust height for web if needed
                   height: isWeb ? 200 : 200.h,
+                      isWeb: isWeb,
                 ),
               ),
               SizedBox(height: isWeb ? 20 : 20.h),

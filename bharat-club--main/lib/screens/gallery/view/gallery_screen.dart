@@ -472,7 +472,6 @@ class FullscreenGalleryController extends GetxController {
 //   }
 // }
 
-
 class GalleryListScreen extends GetView<GalleryController> {
   const GalleryListScreen({super.key});
 
@@ -491,9 +490,7 @@ class GalleryListScreen extends GetView<GalleryController> {
                 decoration: const BoxDecoration(
                   boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10)],
                 ),
-                child: ClipRect(
-                  child: galleryMainView(true),
-                ),
+                child: ClipRect(child: galleryMainView(true)),
               ),
             ),
           );
@@ -511,7 +508,10 @@ class GalleryListScreen extends GetView<GalleryController> {
           if (isAvailable) {
             await controller.getGalleryUsApi();
           } else {
-            AppAlert.showSnackBar(Get.context!, MessageConstants.noInternetConnection);
+            AppAlert.showSnackBar(
+              Get.context!,
+              MessageConstants.noInternetConnection,
+            );
           }
         });
       },
@@ -538,6 +538,7 @@ class GalleryListScreen extends GetView<GalleryController> {
           BannerCard(
             bannerUrl: controller.sGalleryBannerImage.value,
             // You can optionally pass a fixed height for web here
+            isWeb: isWeb,
           ),
 
           SizedBox(height: isWeb ? 15 : 15.h),
@@ -559,22 +560,24 @@ class GalleryListScreen extends GetView<GalleryController> {
           // Responsive Grid
           controller.intGalleryCount.value > 0
               ? StaggeredGridView.countBuilder(
-            staggeredTileBuilder: (int index) => const StaggeredTile.fit(1),
-            physics: const NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            itemCount: controller.mGalleryList.length,
-            crossAxisCount: 2, // Keeps 2 columns to maintain the "mobile" look on web 500px
-            crossAxisSpacing: isWeb ? 12 : 12.w,
-            mainAxisSpacing: isWeb ? 12 : 12.h,
-            itemBuilder: (context, index) {
-              return _buildGalleryItem(
-                controller.mGalleryList[index],
-                index,
-                context,
-                isWeb,
-              );
-            },
-          )
+                  staggeredTileBuilder: (int index) =>
+                      const StaggeredTile.fit(1),
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: controller.mGalleryList.length,
+                  crossAxisCount: 2,
+                  // Keeps 2 columns to maintain the "mobile" look on web 500px
+                  crossAxisSpacing: isWeb ? 12 : 12.w,
+                  mainAxisSpacing: isWeb ? 12 : 12.h,
+                  itemBuilder: (context, index) {
+                    return _buildGalleryItem(
+                      controller.mGalleryList[index],
+                      index,
+                      context,
+                      isWeb,
+                    );
+                  },
+                )
               : _buildNoData(isWeb),
         ],
       ),
@@ -596,7 +599,12 @@ class GalleryListScreen extends GetView<GalleryController> {
     );
   }
 
-  Widget _buildGalleryItem(dynamic mGalleryModule, int index, BuildContext context, bool isWeb) {
+  Widget _buildGalleryItem(
+    dynamic mGalleryModule,
+    int index,
+    BuildContext context,
+    bool isWeb,
+  ) {
     final isVideo = (mGalleryModule.videoUrl ?? '').isNotEmpty;
 
     return GestureDetector(
@@ -651,8 +659,14 @@ class GalleryListScreen extends GetView<GalleryController> {
     return CachedNetworkImage(
       imageUrl: url!,
       fit: BoxFit.cover,
-      placeholder: (context, url) => Center(child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.cAppColorsBlue)),
-      errorWidget: (context, url, error) => const Icon(Icons.broken_image_outlined),
+      placeholder: (context, url) => Center(
+        child: CircularProgressIndicator(
+          strokeWidth: 2,
+          color: AppColors.cAppColorsBlue,
+        ),
+      ),
+      errorWidget: (context, url, error) =>
+          const Icon(Icons.broken_image_outlined),
     );
   }
 
@@ -672,8 +686,15 @@ class GalleryListScreen extends GetView<GalleryController> {
     return Center(
       child: Container(
         padding: EdgeInsets.all(isWeb ? 12 : 12.w),
-        decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-        child: Icon(Icons.play_arrow_rounded, size: isWeb ? 32 : 32.sp, color: AppColors.cAppColorsBlue),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+        ),
+        child: Icon(
+          Icons.play_arrow_rounded,
+          size: isWeb ? 32 : 32.sp,
+          color: AppColors.cAppColorsBlue,
+        ),
       ),
     );
   }
@@ -684,15 +705,27 @@ class GalleryListScreen extends GetView<GalleryController> {
       right: isWeb ? 8 : 8.w,
       child: Container(
         padding: EdgeInsets.all(isWeb ? 6 : 6.w),
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8.r)),
-        child: Icon(isVideo ? Icons.videocam : Icons.image, size: isWeb ? 16 : 16.sp, color: AppColors.cAppColorsBlue),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8.r),
+        ),
+        child: Icon(
+          isVideo ? Icons.videocam : Icons.image,
+          size: isWeb ? 16 : 16.sp,
+          color: AppColors.cAppColorsBlue,
+        ),
       ),
     );
   }
 
-  void _showFullscreenImage(BuildContext context, dynamic mGalleryModule, int initialIndex, bool isWeb) {
+  void _showFullscreenImage(
+    BuildContext context,
+    dynamic mGalleryModule,
+    int initialIndex,
+    bool isWeb,
+  ) {
     Get.to(
-          () => FullscreenGalleryViewer(
+      () => FullscreenGalleryViewer(
         galleryList: controller.mGalleryList.cast<GalleryModule>().toList(),
         initialIndex: initialIndex,
         isWeb: isWeb,
@@ -724,53 +757,67 @@ class FullscreenGalleryViewer extends GetView<FullscreenGalleryController> {
 
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Obx(() => Stack(
-        children: [
-          PageView.builder(
-            controller: controller.pageController,
-            itemCount: galleryList.length,
-            onPageChanged: controller.onPageChanged,
-            itemBuilder: (context, index) {
-              final item = galleryList[index];
-              return GestureDetector(
-                onTap: controller.toggleControls,
-                child: Center(
-                  child: InteractiveViewer(
-                    child: Hero(
-                      tag: 'gallery_$index',
-                      child: CachedNetworkImage(
-                        imageUrl: item.fileUrl ?? "",
-                        fit: BoxFit.contain,
+      body: Obx(
+        () => Stack(
+          children: [
+            PageView.builder(
+              controller: controller.pageController,
+              itemCount: galleryList.length,
+              onPageChanged: controller.onPageChanged,
+              itemBuilder: (context, index) {
+                final item = galleryList[index];
+                return GestureDetector(
+                  onTap: controller.toggleControls,
+                  child: Center(
+                    child: InteractiveViewer(
+                      child: Hero(
+                        tag: 'gallery_$index',
+                        child: CachedNetworkImage(
+                          imageUrl: item.fileUrl ?? "",
+                          fit: BoxFit.contain,
+                        ),
                       ),
                     ),
                   ),
-                ),
-              );
-            },
-          ),
+                );
+              },
+            ),
 
-          // Use the same conditional logic for UI controls visibility
-          if (controller.showControls.value) ...[
-            _buildTopBar(context),
-            _buildBottomBar(context),
-          ]
-        ],
-      )),
+            // Use the same conditional logic for UI controls visibility
+            if (controller.showControls.value) ...[
+              _buildTopBar(context),
+              _buildBottomBar(context),
+            ],
+          ],
+        ),
+      ),
     );
   }
 
   Widget _buildTopBar(BuildContext context) {
     return Positioned(
-      top: 0, left: 0, right: 0,
+      top: 0,
+      left: 0,
+      right: 0,
       child: Container(
-        padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top, left: 16, right: 16, bottom: 16),
+        padding: EdgeInsets.only(
+          top: MediaQuery.of(context).padding.top,
+          left: 16,
+          right: 16,
+          bottom: 16,
+        ),
         color: Colors.black45,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            IconButton(icon: const Icon(Icons.close, color: Colors.white), onPressed: () => Get.back()),
-            Text('${controller.currentIndex.value + 1} / ${galleryList.length}',
-                style: const TextStyle(color: Colors.white)),
+            IconButton(
+              icon: const Icon(Icons.close, color: Colors.white),
+              onPressed: () => Get.back(),
+            ),
+            Text(
+              '${controller.currentIndex.value + 1} / ${galleryList.length}',
+              style: const TextStyle(color: Colors.white),
+            ),
           ],
         ),
       ),
@@ -779,19 +826,36 @@ class FullscreenGalleryViewer extends GetView<FullscreenGalleryController> {
 
   Widget _buildBottomBar(BuildContext context) {
     return Positioned(
-      bottom: 0, left: 0, right: 0,
+      bottom: 0,
+      left: 0,
+      right: 0,
       child: Container(
-        padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom + 16, left: 16, right: 16, top: 16),
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).padding.bottom + 16,
+          left: 16,
+          right: 16,
+          top: 16,
+        ),
         color: Colors.black45,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             IconButton(
-              icon: Icon(Icons.arrow_back_ios, color: controller.currentIndex.value > 0 ? Colors.white : Colors.white24),
+              icon: Icon(
+                Icons.arrow_back_ios,
+                color: controller.currentIndex.value > 0
+                    ? Colors.white
+                    : Colors.white24,
+              ),
               onPressed: () => controller.previousPage(),
             ),
             IconButton(
-              icon: Icon(Icons.arrow_forward_ios, color: controller.currentIndex.value < galleryList.length - 1 ? Colors.white : Colors.white24),
+              icon: Icon(
+                Icons.arrow_forward_ios,
+                color: controller.currentIndex.value < galleryList.length - 1
+                    ? Colors.white
+                    : Colors.white24,
+              ),
               onPressed: () => controller.nextPage(galleryList.length),
             ),
           ],

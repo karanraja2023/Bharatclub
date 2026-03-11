@@ -192,7 +192,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
                 ),
                 SizedBox(height: 8.h),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: isWeb ? 40.w : 0),
+                  padding: EdgeInsets.symmetric(horizontal: isWeb ? 20.w : 0),
                   child: Text(
                     'Enter your email to receive a password reset link',
                     textAlign: TextAlign.center,

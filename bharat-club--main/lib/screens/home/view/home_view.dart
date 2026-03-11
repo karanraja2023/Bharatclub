@@ -363,9 +363,11 @@
 //   }
 // }
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:focus_detector/focus_detector.dart';
 import 'package:get/get.dart';
 import 'package:mobileapp/app/routes_name.dart';
 import 'package:mobileapp/app_theme/theme/app_theme.dart';
@@ -382,66 +384,67 @@ import 'package:mobileapp/screens/home/controller/home_controller.dart';
 import 'package:mobileapp/screens/membership/view/membership_expiry.dart';
 import '../../../alert/app_alert.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+// class HomeScreen extends GetView<HomeController> {
+//   const HomeScreen({super.key});
+//
+//   @override
+//   State<HomeScreen> createState() => _HomeScreenState();
+// }
 
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
+class HomeScreen extends GetView<HomeController> {
   final CarouselSliderController _carouselController =
       CarouselSliderController();
-  final HomeController controller = Get.put(HomeController());
-
-  @override
-  void initState() {
-    super.initState();
-    _loadData();
-  }
 
   Future<void> _loadData() async {
     await controller.membershipTypeLoad();
   }
 
   @override
-  void dispose() {
-    controller.stopTimer();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        // Breakpoint for Web/Tablet
-        bool isWeb = constraints.maxWidth >= 800;
-
+    Get.lazyPut(() => HomeController());
+    return FocusDetector(
+      onVisibilityGained: () async {
+        final bool isWeb = kIsWeb;
         if (isWeb) {
-          return Scaffold(
-            backgroundColor: Colors.grey[200], // Background for margins
-            body: Center(
-              child: Container(
-                width: 500, // Fixed phone-style width on web
-                height: double.infinity,
-                decoration: BoxDecoration(
-                  color: AppColors.background,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 20,
-                      spreadRadius: 5,
-                    ),
-                  ],
-                ),
-                child: ClipRect(child: mobileView(isWeb)),
-              ),
-            ),
-          );
+          _loadData();
         } else {
-          return mobileView(isWeb);
+          if (controller.isLoading.value) {
+            _loadData();
+          }
         }
       },
+      onVisibilityLost: () {},
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          // Breakpoint for Web/Tablet
+          bool isWeb = constraints.maxWidth >= 800;
+
+          if (isWeb) {
+            return Scaffold(
+              backgroundColor: Colors.grey[200], // Background for margins
+              body: Center(
+                child: Container(
+                  width: 500, // Fixed phone-style width on web
+                  height: double.infinity,
+                  decoration: BoxDecoration(
+                    color: AppColors.background,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 20,
+                        spreadRadius: 5,
+                      ),
+                    ],
+                  ),
+                  child: ClipRect(child: mobileView(isWeb)),
+                ),
+              ),
+            );
+          } else {
+            return mobileView(isWeb);
+          }
+        },
+      ),
     );
   }
 
@@ -450,10 +453,11 @@ class _HomeScreenState extends State<HomeScreen> {
       if (controller.isLoading.value) {
         return Scaffold(
           backgroundColor: AppColors.background,
-          appBar: const CustomAppBar(
+          appBar: CustomAppBar(
             title: 'Bharat Club',
             showMenu: true,
             showBack: false,
+            isWeb: isWeb,
           ),
           drawer: CustomMenuDrawer(),
           body: _buildShimmerLoading(isWeb),

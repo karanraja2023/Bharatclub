@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' hide Uint8List;
 import 'package:get/get.dart';
@@ -27,6 +28,11 @@ import '../../../data/mode/sponsor_event/sponsor_event_attach_request.dart';
 import '../../../data/mode/sponsor_event/sponsor_event_attach_response.dart';
 import '../../../data/remote/api_call/api_impl.dart';
 import '../../../data/remote/web_response.dart';
+
+
+// web_download.dart
+import 'dart:html' as html;
+import 'dart:typed_data';
 
 class EventDetailsOneController extends GetxController {
   final EventModule mEventModule;
@@ -639,39 +645,70 @@ class EventDetailsOneController extends GetxController {
     }
   }
 
-
-
   Future<void> downloadQR() async {
-    // Request permission (Android)
-    if (Platform.isAndroid) {
-      final status = await Permission.storage.request();
-      if (!status.isGranted) {
-        throw Exception("Storage permission denied");
+    try {
+      ByteData data = await rootBundle.load('assets/images/payment_qr.png');
+      Uint8List bytes = data.buffer.asUint8List();
+
+      if (kIsWeb) {
+        // --- WEB SPECIFIC LOGIC ---
+        final blob = html.Blob([bytes]);
+        final url = html.Url.createObjectUrlFromBlob(blob);
+        final anchor = html.AnchorElement(href: url)
+          ..setAttribute("download", "payment_qr.png")
+          ..click();
+
+        // Cleanup
+        html.Url.revokeObjectUrl(url);
+
+        AppAlert.showSnackBar(
+          Get.context!,
+          'Download started',
+          mColor: Colors.green,
+        );
+      } else {
+        // Request permission (Android)
+        if (Platform.isAndroid) {
+          final status = await Permission.storage.request();
+          if (!status.isGranted) {
+            throw Exception("Storage permission denied");
+          }
+        }
+
+        // Load asset image as bytes
+        ByteData data = await rootBundle.load('assets/images/payment_qr.png');
+        Uint8List bytes = data.buffer.asUint8List();
+
+        Directory directory;
+
+        if (Platform.isAndroid) {
+          // Android Downloads folder
+          directory = Directory('/storage/emulated/0/Download');
+        } else {
+          // iOS Documents directory
+          directory = await getApplicationDocumentsDirectory();
+        }
+
+        final filePath = '${directory.path}/payment_qr.png';
+        final file = File(filePath);
+
+        await file.writeAsBytes(bytes);
+        AppAlert.showSnackBar(
+          Get.context!,
+          'Download qr successful',
+          mColor: Colors.green,
+        );
+
+        print("QR saved at: $filePath");
       }
+    } catch (e) {
+      print("Error downloading QR: $e");
+      AppAlert.showSnackBar(
+        Get.context!,
+        'Download failed',
+        mColor: Colors.red,
+      );
     }
-
-    // Load asset image as bytes
-    ByteData data =
-    await rootBundle.load('assets/images/payment_qr.png');
-    Uint8List bytes = data.buffer.asUint8List();
-
-    Directory directory;
-
-    if (Platform.isAndroid) {
-      // Android Downloads folder
-      directory = Directory('/storage/emulated/0/Download');
-    } else {
-      // iOS Documents directory
-      directory = await getApplicationDocumentsDirectory();
-    }
-
-    final filePath = '${directory.path}/payment_qr.png';
-    final file = File(filePath);
-
-    await file.writeAsBytes(bytes);
-    AppAlert.showSnackBar(Get.context!, 'Download qr successful',mColor: Colors.green);
-
-    print("QR saved at: $filePath");
   }
 
   void showQrDialog() {

@@ -940,7 +940,7 @@ class ProfileScreen extends GetView<ProfileController> {
                         sDeleteProfile.tr,
                         Icons.delete_outline_rounded,
                         Colors.red,
-                        () => controller.deleteProfile(),
+                        () => controller.deleteProfile(isWeb),
                       ),
 
                       SizedBox(height: isWeb ? 30 : 30.h),

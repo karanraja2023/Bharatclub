@@ -432,6 +432,7 @@ class _ContactUsListScreenState extends State<ContactUsListScreen> {
       bannerUrl: bannerUrl,
       height: isWeb ? 200 : 200.h,
       borderRadius: isWeb ? 12 : 12.r,
+      isWeb: isWeb,
     );
   }
 
