@@ -38,7 +38,7 @@ class WebConstants {
   static String actionProfile = "user/show"; //post
   static String actionDashboard = "user/dashboard"; //post
   static String actionProfileUpdate = "user/update";
-  // ABOUT_US | EVENTS | NEWS | GALLERY | CONTACT//post
+  // ABOUT_US | EVENTS | NEWS | GALLERY | CONTACT | MEMBERSHIP_DETAILS//post
   static String actionCmsPage = "user/cmsPage"; //post
   static String actionUploadProfileImage = "user/uploadProfileImage"; //post
   static String actionUploadPayment = "user/upload"; //post

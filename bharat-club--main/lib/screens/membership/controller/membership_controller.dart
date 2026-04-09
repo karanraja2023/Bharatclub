@@ -1,7 +1,10 @@
 import 'dart:convert';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:mobileapp/app/routes_name.dart';
 import 'package:mobileapp/common/constant/web_constant.dart';
+import 'package:mobileapp/data/mode/cms_page/cms_page_request.dart';
+import 'package:mobileapp/data/mode/cms_page/about_us_response.dart';
 import 'package:mobileapp/utils/message_constants.dart';
 import 'package:mobileapp/utils/network_util.dart';
 
@@ -24,6 +27,7 @@ class MembershipDetailsController extends GetxController {
   RxString phoneNumber = "".obs;
   RxString photo = "".obs;
   RxString attachmentPath = "".obs;
+  RxString membershipHtmlContent = "".obs;
   String fileName = "";
   String sPath = "";
 
@@ -31,7 +35,11 @@ class MembershipDetailsController extends GetxController {
   void onInit() {
     super.onInit();
     getProfile();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      getMembershipDetailsApi();
+    });
   }
+
   Future<void> getProfile() async {
     NetworkUtils().checkInternetConnection().then((isInternetAvailable) async {
       if (isInternetAvailable) {
@@ -86,6 +94,45 @@ class MembershipDetailsController extends GetxController {
       }
     });
   }
+
+  Future<void> getMembershipDetailsApi() async {
+    try {
+      CmsPageRequest mCmsPageRequest = CmsPageRequest(
+        name: CmsPageRequestType.MEMBERSHIP_DETAILS.name,
+      );
+
+      WebResponseSuccess mWebResponseSuccess = await AllApiImpl().postCmsPage(
+        mCmsPageRequest,
+      );
+
+      if (mWebResponseSuccess.statusCode == WebConstants.statusCode200 &&
+          mWebResponseSuccess.data != null) {
+        if (mWebResponseSuccess.data is AboutUsResponse) {
+          membershipHtmlContent.value =
+              (mWebResponseSuccess.data as AboutUsResponse).data?.content ?? "";
+        } else if (mWebResponseSuccess.data is Map) {
+          membershipHtmlContent.value =
+              AboutUsResponse.fromJson(
+                mWebResponseSuccess.data,
+              ).data?.content ??
+              "";
+   
+        } else {
+          print(
+            " getMembershipDetailsApi: unsupported response type=${mWebResponseSuccess.data.runtimeType}",
+          );
+        }
+      } else {
+        print(
+          " getMembershipDetailsApi: failed or empty response statusCode=${mWebResponseSuccess.statusCode} data=${mWebResponseSuccess.data}",
+        );
+      }
+    } catch (e, stackTrace) {
+      print(" getMembershipDetailsApi: exception=$e");
+      print(" getMembershipDetailsApi: stackTrace=$stackTrace");
+    }
+  }
+
   bool dateCompare(String endDate) {
     DateTime today = DateTime.now();
     String sToday =

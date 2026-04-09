@@ -1,8 +1,8 @@
 // {
 // "page_name": "EVENTS"
-// // ABOUT_US | EVENTS | NEWS | GALLERY | CONTACT
+// // ABOUT_US | EVENTS | NEWS | GALLERY | CONTACT | MEMBERSHIP_DETAILS
 // }
-enum CmsPageRequestType { ABOUT_US, EVENTS,NEWS,GALLERY,CONTACT }
+enum CmsPageRequestType { ABOUT_US, EVENTS, NEWS, GALLERY, CONTACT, MEMBERSHIP_DETAILS }
 
 class CmsPageRequest {
   CmsPageRequest({

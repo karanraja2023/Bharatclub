@@ -317,7 +317,7 @@ class MembershipDetailsScreen extends GetView<MembershipDetailsController> {
           Padding(
             padding: EdgeInsets.all(isWeb ? 24 : 24.r),
             child: HtmlWidget(
-              _benefitsHtmlContent(), // Keeping your HTML logic
+              _resolvedMembershipHtmlContent(),
               textStyle: getTextRegular(
                 colors: const Color(0xFF2C3E50),
                 size: isWeb ? 15 : 15.sp, // Fixed for web
@@ -330,13 +330,36 @@ class MembershipDetailsScreen extends GetView<MembershipDetailsController> {
     );
   }
 
+  String _resolvedMembershipHtmlContent() {
+    final rawHtml = controller.membershipHtmlContent.value.trim();
+
+    if (rawHtml.isEmpty) {
+      return _benefitsHtmlContent();
+    }
+
+    final sanitizedHtml = _sanitizeMembershipHtmlContent(rawHtml);
+    return sanitizedHtml.isNotEmpty ? sanitizedHtml : _benefitsHtmlContent();
+  }
+
+  String _sanitizeMembershipHtmlContent(String html) {
+    return html
+        .replaceAll(RegExp(r'<font[^>]*>', caseSensitive: false), '')
+        .replaceAll(RegExp(r'</font>', caseSensitive: false), '')
+        .replaceAll(RegExp(r'<table[^>]*>', caseSensitive: false), '<div>')
+        .replaceAll(RegExp(r'</table>', caseSensitive: false), '</div>')
+        .replaceAll(RegExp(r'<tr[^>]*>', caseSensitive: false), '<div>')
+        .replaceAll(RegExp(r'</tr>', caseSensitive: false), '</div>')
+        .replaceAll(RegExp(r'<td[^>]*>', caseSensitive: false), '<div>')
+        .replaceAll(RegExp(r'</td>', caseSensitive: false), '</div>')
+        .replaceAll('2026}.', '2026.')
+        .trim();
+  }
+
   String _benefitsHtmlContent() => '''
 <div style="line-height: 1.8;">
 <p style="margin-bottom: 16px; color: #2C3E50; font-weight: 600;">Dear Bharat Club Members,</p>
 
-<p style="margin-bottom: 16px; color: #E74C3C; font-weight: 700; font-size: 16px;">Countdown to 50th Anniversary</p>
-
-<p style="margin-bottom: 20px; color: #34495E;">We are pleased to announce an updated list of restaurants offering exclusive discounts to Bharat Club registered members in 2024.</p>
+<p style="margin-bottom: 20px; color: #34495E;">We are pleased to announce an updated list of restaurants offering exclusive discounts to Bharat Club registered members in ${DateTime.now().year}.</p>
 
 <div style="background: linear-gradient(135deg, #FFF8F0 0%, #F0FFF4 100%); padding: 20px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #ED9F54;">
 
@@ -353,7 +376,7 @@ class MembershipDetailsScreen extends GetView<MembershipDetailsController> {
 
 </div>
 
-<p style="margin-bottom: 16px; color: #34495E; background: #E8F5E9; padding: 12px; border-radius: 8px;">MOBILE <strong>E-Membership Card:</strong> Available to all 2024 registered members. Check your messages!</p>
+<p style="margin-bottom: 16px; color: #34495E; background: #E8F5E9; padding: 12px; border-radius: 8px;">MOBILE <strong>E-Membership Card:</strong> Available to all ${DateTime.now().year} registered members. Check your messages!</p>
 
 <p style="margin-bottom: 12px; color: #27AE60; font-weight: 600;">Thanks for being part of Bharat Club Kuala Lumpur.</p>
 

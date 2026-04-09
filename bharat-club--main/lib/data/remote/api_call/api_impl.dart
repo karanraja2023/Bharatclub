@@ -371,7 +371,8 @@ class AllApiImpl implements IApiRepository {
         processResponseToJson,
       );
       return mGalleryResponse;
-    } else if (CmsPageRequestType.ABOUT_US.name == sRequest.name) {
+    } else if (CmsPageRequestType.ABOUT_US.name == sRequest.name ||
+        CmsPageRequestType.MEMBERSHIP_DETAILS.name == sRequest.name) {
       AboutUsResponse mAboutUsResponse = AboutUsResponse.fromJson(
         processResponseToJson,
       );
