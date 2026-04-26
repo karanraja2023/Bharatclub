@@ -243,35 +243,32 @@ class LoginScreenController extends GetxController {
                     WebConstants.statusCode200) {
                   RegistrationResponse mRegistrationResponse =
                       mWebResponseSuccess.data;
-                  await SharedPrefs().setUserToken(
-                    mRegistrationResponse.data?.token ?? "",
-                  );
+                  final registrationData = mRegistrationResponse.data;
+                  final user = registrationData?.user;
+
+                  if (registrationData == null || user == null) {
+                    AppAlert.showSnackBar(
+                      Get.context!,
+                      'Invalid login response. Please try again.',
+                    );
+                    return;
+                  }
+
+                  await SharedPrefs().setUserToken(registrationData.token ?? "");
                   await SharedPrefs().setUserLoginStatus(
-                    (mRegistrationResponse.data?.user?.loginStatus ?? 0)
-                        .toString(),
+                    (user.loginStatus ?? 0).toString(),
                   );
-                  await SharedPrefs().setUserDetails(
-                    jsonEncode(mRegistrationResponse.data!.user),
-                  );
+                  await SharedPrefs().setUserDetails(jsonEncode(user));
 
                   // Save device ID
                   await SharedPrefs().setDeviceId(deviceId.value);
 
-                  if (mRegistrationResponse.data!.user != null) {
-                    if ((mRegistrationResponse.data?.user?.loginStatus ?? 0) ==
-                        0) {
-                      Get.toNamed(AppRoutes.changePassword);
-                    } else {
-                      mEmailController.text = "";
-                      mPasswordController.text = "";
-                      Get.delete<LoginScreenController>();
-                      Get.offNamed(AppRoutes.home);
-                    }
+                  if ((user.loginStatus ?? 0) == 0) {
+                    Get.toNamed(AppRoutes.changePassword);
                   } else {
-                    AppAlert.showSnackBar(
-                      Get.context!,
-                      'Please enter the valid user id and password',
-                    );
+                    mEmailController.text = "";
+                    mPasswordController.text = "";
+                    Get.offNamed(AppRoutes.home);
                   }
                 } else {
                   AppAlert.showSnackBar(
@@ -279,13 +276,14 @@ class LoginScreenController extends GetxController {
                     'Invalid credentials. Please try again.',
                   );
                 }
-              } catch (e) {
+              } catch (e, st) {
                 isLoading.value = false;
                 AppAlert.showSnackBar(
                   Get.context!,
                   'Login failed. Please try again.',
                 );
                 print('Login API Error: $e');
+                print('Login API Stack: $st');
               }
             } else {
               isLoading.value = false;

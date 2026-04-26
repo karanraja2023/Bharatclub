@@ -416,36 +416,90 @@ class HomeScreen extends GetView<HomeController> {
       onVisibilityLost: () {},
       child: LayoutBuilder(
         builder: (context, constraints) {
-          // Breakpoint for Web/Tablet
-          bool isWeb = constraints.maxWidth >= 800;
-
+          // Keep mobile UI unchanged; render a wide web/tablet layout.
+          final bool isWeb = constraints.maxWidth >= 800;
           if (isWeb) {
-            return Scaffold(
-              backgroundColor: Colors.grey[200], // Background for margins
-              body: Center(
-                child: Container(
-                  width: 500, // Fixed phone-style width on web
-                  height: double.infinity,
-                  decoration: BoxDecoration(
-                    color: AppColors.background,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 20,
-                        spreadRadius: 5,
-                      ),
-                    ],
-                  ),
-                  child: ClipRect(child: mobileView(isWeb)),
-                ),
-              ),
-            );
+            return webView(constraints.maxWidth);
           } else {
             return mobileView(isWeb);
           }
         },
       ),
     );
+  }
+
+  Widget webView(double maxWidth) {
+    final bool isTablet = maxWidth < 1200;
+    final double contentWidth = isTablet
+        ? (maxWidth * 0.94).clamp(760.0, 980.0)
+        : (maxWidth * 0.9).clamp(1100.0, 1400.0);
+
+    return Obx(() {
+      if (controller.isLoading.value) {
+        return Scaffold(
+          backgroundColor: Colors.grey[100],
+          appBar: CustomAppBar(
+            title: 'Bharat Club',
+            showMenu: true,
+            showBack: false,
+            isWeb: true,
+          ),
+          drawer: CustomMenuDrawer(),
+          body: Center(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: contentWidth),
+              child: _buildShimmerLoading(true),
+            ),
+          ),
+        );
+      }
+
+      if (controller.membershipExpired.value) {
+        return Scaffold(
+          backgroundColor: Colors.grey[100],
+          appBar: CustomAppBar(
+            title: 'Bharat Club',
+            showMenu: true,
+            showBack: false,
+            isWeb: true,
+          ),
+          drawer: CustomMenuDrawer(),
+          body: Center(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: contentWidth),
+              child: MembershipExpiredPage(
+                onContactPressed: () => controller.handleContactSupport(),
+                onRenewPressed: () => controller.handleRenewMembership(),
+              ),
+            ),
+          ),
+        );
+      }
+
+      return Scaffold(
+        backgroundColor: Colors.grey[100],
+        appBar: CustomAppBar(
+          title: 'Bharat Club',
+          showMenu: true,
+          showBack: false,
+          isWeb: true,
+        ),
+        drawer: CustomMenuDrawer(),
+        body: RefreshIndicator(
+          onRefresh: _handleRefresh,
+          color: AppColors.secondaryGreen,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: contentWidth),
+                child: _buildContent(true),
+              ),
+            ),
+          ),
+        ),
+      );
+    });
   }
 
   Widget mobileView(bool isWeb) {
@@ -498,7 +552,9 @@ class HomeScreen extends GetView<HomeController> {
   }
 
   Widget _buildContent(bool isWeb) {
-    return Column(
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: isWeb ? 20 : 0),
+      child: Column(
       children: [
         // Profile Card Section
         Padding(
@@ -539,6 +595,7 @@ class HomeScreen extends GetView<HomeController> {
         _buildSponsorsCarousel(isWeb),
         SizedBox(height: isWeb ? 24 : 24.h),
       ],
+      ),
     );
   }
 

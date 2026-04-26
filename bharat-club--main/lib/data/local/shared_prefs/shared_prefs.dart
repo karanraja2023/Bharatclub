@@ -17,6 +17,10 @@ class SharedPrefs {
 
   SharedPreferences? sharedPreferences;
 
+  Future<SharedPreferences> _prefs() async {
+    return sharedPreferences ??= await SharedPreferences.getInstance();
+  }
+
   sharedPreferencesInstance() async {
     if (sharedPreferences == null) {
       return sharedPreferences = await SharedPreferences.getInstance();
@@ -28,12 +32,13 @@ class SharedPrefs {
   /// AppUserToke
   Future<void> setUserLoginStatus(String? loginStatus) async {
     /// debugPrint("setToken $bearerToken");
-    sharedPreferences!.setString(PrefConstants.sLoginStatus, loginStatus ?? "");
+    final prefs = await _prefs();
+    await prefs.setString(PrefConstants.sLoginStatus, loginStatus ?? "");
   }
 
   Future<String> getUserLoginStatus() async {
-    String value =
-        sharedPreferences!.getString(PrefConstants.sLoginStatus) ?? "";
+    final prefs = await _prefs();
+    String value = prefs.getString(PrefConstants.sLoginStatus) ?? "";
     if (value.isNotEmpty) {
       return value;
     }
@@ -43,11 +48,13 @@ class SharedPrefs {
   /// AppUserToke
   Future<void> setUserToken(String? bearerToken) async {
     /// debugPrint("setToken $bearerToken");
-    sharedPreferences!.setString(PrefConstants.token, bearerToken ?? "");
+    final prefs = await _prefs();
+    await prefs.setString(PrefConstants.token, bearerToken ?? "");
   }
 
   Future<String> getUserToken() async {
-    String value = sharedPreferences!.getString(PrefConstants.token) ?? "";
+    final prefs = await _prefs();
+    String value = prefs.getString(PrefConstants.token) ?? "";
     if (value.isNotEmpty) {
       return value;
     }
@@ -55,15 +62,16 @@ class SharedPrefs {
   }
 
   Future<void> setUserDetails(String? setUserDetails) async {
-    sharedPreferences!.setString(
+    final prefs = await _prefs();
+    await prefs.setString(
       PrefConstants.sUserDetails,
       setUserDetails ?? "",
     );
   }
 
   Future<RegistrationUser> getUserDetails() async {
-    String value =
-        sharedPreferences!.getString(PrefConstants.sUserDetails) ?? "";
+    final prefs = await _prefs();
+    String value = prefs.getString(PrefConstants.sUserDetails) ?? "";
     if (value.isNotEmpty) {
       return RegistrationUser.fromJson(json.decode(value));
     }
@@ -72,15 +80,16 @@ class SharedPrefs {
 
   //MebershipType Data
   Future<void> setMembershipTypeAll(String? setMembershipTypeAll) async {
-    sharedPreferences!.setString(
+    final prefs = await _prefs();
+    await prefs.setString(
       PrefConstants.sMembershipTypeAll,
       setMembershipTypeAll ?? "",
     );
   }
 
   Future<List<MembershipTypeData>> getMembershipTypeAll() async {
-    String value =
-        sharedPreferences!.getString(PrefConstants.sMembershipTypeAll) ?? "";
+    final prefs = await _prefs();
+    String value = prefs.getString(PrefConstants.sMembershipTypeAll) ?? "";
     if (value.isNotEmpty) {
       List<dynamic> jsonList = jsonDecode(value);
       return jsonList.map((e) => MembershipTypeData.fromJson(e)).toList();

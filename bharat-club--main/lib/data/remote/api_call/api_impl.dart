@@ -159,7 +159,6 @@ class AllApiImpl implements IApiRepository {
       WebConstants.actionLogin,
       exhibitorsListRequest,
     );
-    AppAlert.hideLoadingDialog(Get.context!);
     if (cases.statusCode != WebConstants.statusCode200) {
       mWebResponseFailed = WebResponseFailed.fromJson(
         processResponseToJson(cases),

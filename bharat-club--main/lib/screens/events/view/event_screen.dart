@@ -442,29 +442,35 @@ class _EventScreenState extends State<EventScreen> {
       builder: (context, constraints) {
         // Breakpoint matching ProfileScreen
         bool isWeb = constraints.maxWidth >= 800;
+        final bool isDesktop = constraints.maxWidth >= 1200;
 
         if (isWeb) {
+          final bool isTablet = constraints.maxWidth < 1200;
+          final double contentWidth = isTablet
+              ? (constraints.maxWidth * 0.94).clamp(760.0, 980.0)
+              : (constraints.maxWidth * 0.96).clamp(1200.0, 1800.0);
+
           return Scaffold(
             backgroundColor: Colors.grey[200], // Margin color for Web
             body: Center(
               child: Container(
-                width: 500, // Matching ProfileScreen container width
+                width: contentWidth,
                 height: double.infinity,
                 decoration: const BoxDecoration(
                   boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10)],
                 ),
-                child: ClipRect(child: eventMainView(true)),
+                child: ClipRect(child: eventMainView(true, isDesktop: isDesktop)),
               ),
             ),
           );
         } else {
-          return eventMainView(false);
+          return eventMainView(false, isDesktop: false);
         }
       },
     );
   }
 
-  Widget eventMainView(bool isWeb) {
+  Widget eventMainView(bool isWeb, {bool isDesktop = false}) {
     return Scaffold(
       backgroundColor: isWeb ? Colors.white : AppColors.background,
       appBar: CustomAppBar(title: 'Events', isWeb: isWeb),
@@ -478,8 +484,8 @@ class _EventScreenState extends State<EventScreen> {
           return Container(
             height: isWeb ? double.infinity : 0.85.sh,
             width: double.infinity,
-            padding: EdgeInsets.all(isWeb ? 13 : 13.w),
-            margin: EdgeInsets.all(isWeb ? 13 : 13.w),
+            padding: EdgeInsets.all(isDesktop ? 20 : (isWeb ? 13 : 13.w)),
+            margin: EdgeInsets.all(isDesktop ? 20 : (isWeb ? 13 : 13.w)),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(isWeb ? 10 : 10.r),
@@ -492,46 +498,99 @@ class _EventScreenState extends State<EventScreen> {
                 ),
               ],
             ),
-            child: eventListView(isWeb),
+            child: eventListView(isWeb, isDesktop: isDesktop),
           );
         }),
       ),
     );
   }
 
-  Widget eventListView(bool isWeb) {
+  Widget eventListView(bool isWeb, {bool isDesktop = false}) {
     return SingleChildScrollView(
       padding: EdgeInsets.zero,
-      child: Column(
-        children: [
-          // Banner
-          BannerCard(
-            bannerUrl: controller.sEventBannerImage.value,
-            isWeb: isWeb,
+      child: isDesktop ? _desktopEventLayout(isWeb) : _mobileTabletEventLayout(isWeb),
+    );
+  }
+
+  Widget _mobileTabletEventLayout(bool isWeb) {
+    return Column(
+      children: [
+        BannerCard(
+          bannerUrl: controller.sEventBannerImage.value,
+          isWeb: isWeb,
+        ),
+        SizedBox(height: isWeb ? 15 : 5.h),
+        _buildStyledContent(controller.sEventDec.value, isWeb),
+        SizedBox(height: isWeb ? 15 : 5.h),
+        controller.intEventCount.value > 0
+            ? ListView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: controller.mEventList.length,
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  EventModule mEventModule = controller.mEventList[index];
+                  return _buildEventItem(mEventModule, isWeb);
+                },
+              )
+            : _buildNoData(isWeb),
+      ],
+    );
+  }
+
+  Widget _desktopEventLayout(bool isWeb) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          flex: 3,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              BannerCard(
+                bannerUrl: controller.sEventBannerImage.value,
+                isWeb: isWeb,
+              ),
+              const SizedBox(height: 18),
+              _buildStyledContent(controller.sEventDec.value, isWeb),
+            ],
           ),
-
-          SizedBox(height: isWeb ? 15 : 5.h),
-
-          // HTML Content
-          _buildStyledContent(controller.sEventDec.value, isWeb),
-
-          SizedBox(height: isWeb ? 15 : 5.h),
-
-          // Event List
-          controller.intEventCount.value > 0
-              ? ListView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: controller.mEventList.length,
-                  padding: EdgeInsets.zero,
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) {
-                    EventModule mEventModule = controller.mEventList[index];
-                    return _buildEventItem(mEventModule, isWeb);
-                  },
-                )
-              : _buildNoData(isWeb),
-        ],
-      ),
+        ),
+        const SizedBox(width: 20),
+        Expanded(
+          flex: 2,
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.grey.shade50,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.grey.shade300),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Upcoming Events",
+                  style: getTextSemiBold(colors: AppColors.cAppColorsBlue, size: 20),
+                ),
+                const SizedBox(height: 12),
+                controller.intEventCount.value > 0
+                    ? ListView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: controller.mEventList.length,
+                        padding: EdgeInsets.zero,
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          EventModule mEventModule = controller.mEventList[index];
+                          return _buildEventItem(mEventModule, isWeb);
+                        },
+                      )
+                    : _buildNoData(isWeb, compact: true),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -671,9 +730,9 @@ class _EventScreenState extends State<EventScreen> {
     );
   }
 
-  Widget _buildNoData(bool isWeb) {
+  Widget _buildNoData(bool isWeb, {bool compact = false}) {
     return SizedBox(
-      height: isWeb ? 250 : 250.h,
+      height: compact ? 120 : (isWeb ? 250 : 250.h),
       child: Center(
         child: Text(
           "No data found",

@@ -25,14 +25,18 @@ class MembershipDetailsScreen extends GetView<MembershipDetailsController> {
     return LayoutBuilder(
       builder: (context, constraints) {
         if (constraints.maxWidth >= 800) {
+          final bool isTablet = constraints.maxWidth < 1200;
+          final double contentWidth = isTablet
+              ? (constraints.maxWidth * 0.94).clamp(760.0, 980.0)
+              : (constraints.maxWidth * 0.9).clamp(1100.0, 1400.0);
+
           return Scaffold(
             // Add a scaffold background for the "letterbox" effect
             backgroundColor: Colors.grey[200],
             // Darker background for the web margins
             body: Center(
               child: Container(
-                width: 500,
-                // Standard mobile width feels better on web than 800
+                width: contentWidth,
                 height: double.infinity,
                 decoration: BoxDecoration(
                   boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10)],
